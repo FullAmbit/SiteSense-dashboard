@@ -25,7 +25,8 @@
 function dashboard_settings() {
     return array(
         'name'      => 'dashboard',
-        'shortName' => 'dashboard'
+        'shortName' => 'dashboard',
+        'version'   => '1.0'
     );
 }
 
