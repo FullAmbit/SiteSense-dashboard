@@ -44,7 +44,7 @@ function dashboard_admin_buildContent($data,$db) {
 	$data->output['moduleUpdates'] = json_decode($data->output['moduleUpdates'],TRUE);
 
 	// sitesense version contact
-    $info['SiteSense Version'] = $data->settings['version'];
+    $info['SiteSense Version'] = $data->version;
 	$info['Server time']=strftime('%B %d, %Y, %I:%M:%S %p');
 	$info['Server Signature']=$_SERVER['SERVER_SIGNATURE'];
 	$info['Server Name']=$_SERVER['SERVER_NAME'];
@@ -82,7 +82,7 @@ function dashboard_admin_buildContent($data,$db) {
 	$data->output['pageTitle']='About This CMS -';
 	//-----Call Home-----//
 	$field = array(
-		'version' => $data->settings['version'],
+		'version' => $data->version,
 		'host' => $data->domainName . $data->linkRoot,
 		'removeAttribution' => $data->settings['removeAttribution'],
 		'serverName' => $info['Server Name'],
