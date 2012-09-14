@@ -13,6 +13,9 @@ function languages_dashboard_admin_en_us(){
 		'module'                => 'Module',
 		'updateNow'             => 'Update Now',
 		'moreInfo'              => 'More Info',
+		'coreUpdatesAvail'      => 'SiteSense Updates Available',
+		'coreUpdates'           => 'New features and improvements are available for SiteSense.',
+		'coreUpdatesGet'        => 'Get the Latest Updates',
 	);
 }
 ?>

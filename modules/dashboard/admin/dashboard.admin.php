@@ -24,7 +24,7 @@
 */
 
 function dashboard_admin_buildContent($data,$db) {
-	//$url = 'http://localhost/sitesense.org/version/'; // base url for version 
+	//$url = 'http://localhost/dev/version/'; // base url for version 
 	$url = 'https://sitesense.org/dev/version/'; // base url for version 
 	// modules versions contact
 	$statement = $db->prepare('getEnabledModules','admin_modules'); // modules don't register versions until they're enabled, so this function is borderline useless if you get every module
@@ -37,6 +37,9 @@ function dashboard_admin_buildContent($data,$db) {
 	$moduleQuery = http_build_query(array('modules'=>$moduleQuery));
 	$moduleQuery = rawurldecode($moduleQuery);
 	$moduleUrl = $url . 'modules?' . $moduleQuery;
+	if(isset($data->version)){
+		$moduleUrl .= '&core='.$data->version;
+	}
 	$ch = curl_init($moduleUrl);
 	curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -133,17 +136,15 @@ function dashboard_admin_content($data) {
 			$notification = '';
 		break;
 	}
-	
+	if(!empty($data->output['moduleUpdates']['core'])){
+		theme_dashboardCoreUpdate($data);
+	}
 	theme_welcomeMessage($data,$notification);
-	
-	if (count($data->output['moduleUpdates'])>0) {
+	if(count($data->output['moduleUpdates']['modules'])>0){
 		theme_dashboardUpdateList($data);
-		foreach ($data->output['moduleUpdates'] as $moduleUpdate) {
+		foreach($data->output['moduleUpdates']['modules'] as $moduleUpdate){
 			theme_dashboardUpdateListRow($data,$moduleUpdate);
 		}
 		theme_dashboardUpdateListFoot();
 	}
-	
-	theme_dashboardFoot();
 }
-?>

@@ -60,6 +60,10 @@ function theme_dashboardUpdateListFoot() {
 		</table>
 	';
 }
-function theme_dashboardFoot() {
+function theme_dashboardCoreUpdate($data){
+	echo '<div class="buttonList">
+		<h2>',$data->phrases['dashboard']['coreUpdatesAvail'],'</h2>
+		',$data->phrases['dashboard']['coreUpdates'],'<br>
+		<a href="https://sitesense.org/changelog/',$data->version,'...',$data->output['moduleUpdates']['core']['version'],'">',$data->phrases['dashboard']['coreUpdatesGet'],'</a>
+	</div>';
 }
-?>
