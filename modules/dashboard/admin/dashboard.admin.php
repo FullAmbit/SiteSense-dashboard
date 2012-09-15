@@ -32,22 +32,25 @@ function dashboard_admin_buildContent($data,$db) {
 	$modules = $statement->fetchAll();
 	$moduleQuery = array();
 	foreach($modules as $module){
-		$moduleQuery[$module['shortName']]=$module['version'];
+		if(file_exists('modules/'.$module['name'].'/README.md')&&dashboard_parse_readme('modules/'.$module['name'].'/README.md')){
+			$moduleQuery[$module['shortName']]=$module['version'];
+		}
 	}
 	$statement=$db->prepare('getEnabledPlugins','plugins');
 	$statement->execute();
 	while($fetch=$statement->fetch(PDO::FETCH_ASSOC)){
-		if(file_exists('plugins/'.$fetch['name'].'/install.php')){
-			common_include('plugins/'.$fetch['name'].'/install.php');
-		}
-		if(function_exists($fetch['name'].'_settings')){
-			$settings=call_user_func($fetch['name'].'_settings');
-			if(isset($settings['version'])){
-				$moduleQuery[$fetch['name']]=$settings['version'];
+		if(file_exists('plugins/'.$module['name'].'/README.md')&&dashboard_parse_readme('modules/'.$module['name'].'/README.md')){
+			if(file_exists('plugins/'.$fetch['name'].'/install.php')){
+				common_include('plugins/'.$fetch['name'].'/install.php');
+			}
+			if(function_exists($fetch['name'].'_settings')){
+				$settings=call_user_func($fetch['name'].'_settings');
+				if(isset($settings['version'])){
+					$moduleQuery[$fetch['name']]=$settings['version'];
+				}
 			}
 		}
 	}
-	var_dump($moduleQuery);
 	$moduleQuery = http_build_query(array('modules'=>$moduleQuery));
 	$moduleQuery = rawurldecode($moduleQuery);
 	$moduleUrl = $url . 'modules?' . $moduleQuery;
@@ -161,4 +164,37 @@ function dashboard_admin_content($data) {
 		}
 		theme_dashboardUpdateListFoot();
 	}
+}
+function dashboard_parse_readme($raw){
+	$raw = file_get_contents($raw);
+	$raw = trim($raw);
+	$raw = explode("\n",$raw);
+	$returnArray = array(
+		'title' => trim($raw[0]),
+	);
+	foreach ($raw as $readmeLine) {
+		if (substr($readmeLine,0,3)==' - '||substr($readmeLine,0,3)==' + '||substr($readmeLine,0,3)==' * ') {
+			$readmeLine = ltrim($readmeLine,' -+*');
+			$keyValue = explode(':',$readmeLine,2);
+			if (count($keyValue==2)) {
+				$key = explode(' ',$keyValue[0],2);
+				$key = strtolower($key[0]);
+				if (!isset($returnArray[$key])&&isset($keyValue[1])) {
+					$returnArray[$key] = trim($keyValue[1]);
+				}
+			}
+		}
+	}
+	$requiredKeys = array('title','short','author','description','website','tags','requires','tested','license');
+	foreach ($requiredKeys as $requiredKey) {
+		if (!array_key_exists($requiredKey,$returnArray)) {
+			return false;
+		}
+	}
+	foreach ($returnArray as $returnKey=>$returnValue) {
+		if (!in_array($returnKey,$requiredKeys)) {
+			unset($returnArray[$returnKey]);
+		}
+	}
+	return $returnArray;
 }
