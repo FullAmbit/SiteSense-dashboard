@@ -47,11 +47,14 @@ function theme_dashboardUpdateList($data) {
 	';
 }
 function theme_dashboardUpdateListRow($data,$moduleUpdate) {
+	if(!isset($moduleUpdate['type'])){
+		$moduleUpdate['type']='module';
+	}
 	echo '<tr>
 			<td class="name">',$moduleUpdate['name'],' (<a href="',$moduleUpdate['moreInfo'],'">',$moduleUpdate['shortName'],'</a>)</td>
 			<td>',$moduleUpdate['oldVersion'],'</td>
 			<td>',$moduleUpdate['newVersion'],'</td>
-			<td class="buttonList"><a href="',$data->linkRoot,'admin/modules/upgrade/',$moduleUpdate['shortName'],'">',$data->phrases['dashboard']['updateNow'],'</a>
+			<td class="buttonList"><a href="',$data->linkRoot,'admin/',$moduleUpdate['type'],'s/upgrade/',$moduleUpdate['shortName'],'">',$data->phrases['dashboard']['updateNow'],'</a>
 				<a href="',$moduleUpdate['moreInfo'],'">',$data->phrases['dashboard']['moreInfo'],'</a></td>
 		</tr>';
 }

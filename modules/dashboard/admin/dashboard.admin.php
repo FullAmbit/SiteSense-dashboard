@@ -24,16 +24,30 @@
 */
 
 function dashboard_admin_buildContent($data,$db) {
-	//$url = 'http://localhost/dev/version/'; // base url for version 
-	$url = 'https://sitesense.org/dev/version/'; // base url for version 
+	$url = 'http://localhost/proprietary/version/'; // base url for version 
+	//$url = 'https://sitesense.org/dev/version/'; // base url for version 
 	// modules versions contact
 	$statement = $db->prepare('getEnabledModules','admin_modules'); // modules don't register versions until they're enabled, so this function is borderline useless if you get every module
 	$statement->execute();
 	$modules = $statement->fetchAll();
 	$moduleQuery = array();
-	foreach ($modules as $module) {
-		$moduleQuery[$module['shortName']] = $module['version'];
+	foreach($modules as $module){
+		$moduleQuery[$module['shortName']]=$module['version'];
 	}
+	$statement=$db->prepare('getEnabledPlugins','plugins');
+	$statement->execute();
+	while($fetch=$statement->fetch(PDO::FETCH_ASSOC)){
+		if(file_exists('plugins/'.$fetch['name'].'/install.php')){
+			common_include('plugins/'.$fetch['name'].'/install.php');
+		}
+		if(function_exists($fetch['name'].'_settings')){
+			$settings=call_user_func($fetch['name'].'_settings');
+			if(isset($settings['version'])){
+				$moduleQuery[$fetch['name']]=$settings['version'];
+			}
+		}
+	}
+	var_dump($moduleQuery);
 	$moduleQuery = http_build_query(array('modules'=>$moduleQuery));
 	$moduleQuery = rawurldecode($moduleQuery);
 	$moduleUrl = $url . 'modules?' . $moduleQuery;
