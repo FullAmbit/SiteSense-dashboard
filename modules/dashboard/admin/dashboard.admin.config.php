@@ -27,7 +27,7 @@ function dashboard_admin_config($data,$db) {
         'access' => $data->phrases['core']['permission_dashboard_access']
     );
     
-    if(checkPermission('dashboard_access','core',$data)) {
+    if(checkPermission('access','dashboard',$data)) {
         $data->admin['menu'][]=array(
           'category'  => $data->phrases['core']['siteManagement'],
           'command'   => 'dashboard',
